@@ -1,7 +1,6 @@
 <?php
 require_once "login/auth.php";
 
-
 $conn = new mysqli("localhost", "root", "", "konkurs");
 if ($conn->connect_error) die("Błąd bazy danych");
 
@@ -11,19 +10,17 @@ $kategorie  = $conn->query("SELECT * FROM kategorie ORDER BY id")->fetch_all(MYS
 $kryteria   = $conn->query("SELECT * FROM kryteria ORDER BY kategoria_id, id")->fetch_all(MYSQLI_ASSOC);
 $oceny      = $conn->query("SELECT * FROM oceny")->fetch_all(MYSQLI_ASSOC);
 
-
 $juryMap = array_column($jury, null, 'id');
 $krytMap = array_column($kryteria, null, 'id');
 $katMap  = array_column($kategorie, 'nazwa', 'id');
 
-
 $kryteriaByKat = [];
 foreach ($kryteria as $k) $kryteriaByKat[$k['kategoria_id']][] = $k;
-
 
 $punkty = [];
 foreach ($oceny as $o) {
     $punkty[$o['uczestnik_id']][$o['kryterium_id']][$o['juror_id']] = $o['punkty'];
+
 }
 ?>
 <!DOCTYPE html>
@@ -41,13 +38,13 @@ foreach ($oceny as $o) {
         .auto-refresh { position:fixed; top:10px; right:10px; background:#444; padding:6px 12px; border-radius:8px; font-size:13px; color:#fff }
     </style>
     <script>
-        setTimeout(() => location.reload(), 10000);
+        setTimeout(() => location.reload(), 2500);
     </script>
 </head>
 <body>
 
 <h1>🧾 Tablica ocen – LIVE</h1>
-<div class="auto-refresh">⏳ Odświeżanie co 10s</div>
+<div class="auto-refresh">⏳ Odświeżanie co 2,5s</div>
 
 <table>
     <thead>
@@ -89,8 +86,9 @@ foreach ($oceny as $o) {
                         <?php
                         $val = $punkty[$u['id']][$k['id']][$j['id']] ?? '';
                         $suma += is_numeric($val) ? (int)$val : 0;
+                        $style = $val !== '' ? 'style="background:#004b93; color:#fff; font-weight:bold;"' : '';
                         ?>
-                        <td><?= $val !== '' ? $val : '-' ?></td>
+                        <td <?= $style ?>><?= $val !== '' ? $val : '-' ?></td>
                     <?php endforeach; ?>
                 <?php endforeach; ?>
             <?php endforeach; ?>
