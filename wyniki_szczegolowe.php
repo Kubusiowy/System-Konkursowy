@@ -29,23 +29,102 @@ foreach ($oceny as $o) {
     <meta charset="UTF-8">
     <title>Tablica ocen LIVE</title>
     <style>
-        body { font-family:Arial; background:#121212; color:#eee; padding:40px; text-align:center; }
-        table { border-collapse:collapse; margin:0 auto; background:#1e1e1e; color:#f1f1f1; }
-        th, td { border:1px solid #333; padding:6px 10px; text-align:center; font-size:14px; }
-        th { background:#333; position:sticky; top:0; z-index:3; }
-        tr:nth-child(even) { background:#2a2a2a; }
-        .total { background:#004b93; font-weight:bold; color:#fff; position:sticky; right:0; }
-        .auto-refresh { position:fixed; top:10px; right:10px; background:#444; padding:6px 12px; border-radius:8px; font-size:13px; color:#fff }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1c1c1c;
+            color: #f0f0f0;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-width: 100%;
+            border: 1px solid #444;
+            padding-bottom: 10px;
+            scroll-behavior: auto;
+
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            min-width: 2400px;
+            width: max-content;
+            table-layout: auto;
+            background: #1e1e1e;
+            color: #f1f1f1;
+        }
+
+        th, td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        thead th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        thead tr:nth-child(1) th { background-color: #444; }
+        thead tr:nth-child(2) th { background-color: #3a3a3a; }
+        thead tr:nth-child(3) th { background-color: #2a2a2a; }
+
+        tr:nth-child(even) { background: #2a2a2a; }
+        tr:nth-child(odd) { background: #1e1e1e; }
+
+        td:not(:empty):not(.total) {
+            background-color: #004b93;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        td:first-child {
+            font-weight: bold;
+            text-align: left;
+            white-space: nowrap;
+            background-color: #252525;
+        }
+
+        .total {
+            background: #0073e6;
+            font-weight: bold;
+            color: #fff;
+            position: sticky;
+            right: 0;
+            z-index: 1;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .auto-refresh {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #444;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #fff;
+            z-index: 5;
+        }
     </style>
-    <script>
-        setTimeout(() => location.reload(), 2500);
-    </script>
+
 </head>
 <body>
 
-<h1>🧾 Tablica ocen – LIVE</h1>
-<div class="auto-refresh">⏳ Odświeżanie co 2,5s</div>
-
+<div class="auto-refresh">
+    ⏳ Odświeżanie: <span id="status">Włączone</span><br>
+    <button onclick="toggleRefresh()">🔁 Przełącz</button>
+</div>
+<div class="table-wrapper">
 <table>
     <thead>
     <tr>
@@ -97,6 +176,42 @@ foreach ($oceny as $o) {
     <?php endforeach; ?>
     </tbody>
 </table>
+</div>
 <a href="panel.php" style="display:block; text-align:center; margin-top: 30px; ">⬅ Powrót do panelu</a>
+
+<script>
+    let refreshEnabled = sessionStorage.getItem('refresh') !== 'false'; // domyślnie true
+
+    const wrapper = document.querySelector('.table-wrapper');
+
+
+    window.addEventListener('load', () => {
+        const savedScroll = sessionStorage.getItem('scrollX');
+        if (savedScroll && wrapper) {
+            wrapper.scrollLeft = parseInt(savedScroll);
+        }
+
+
+        if (refreshEnabled) {
+            setTimeout(() => {
+                if (wrapper) {
+                    sessionStorage.setItem('scrollX', wrapper.scrollLeft);
+                }
+                location.reload();
+            }, 2500);
+        }
+
+
+        document.getElementById('status').textContent = refreshEnabled ? 'Włączone' : 'Wyłączone';
+    });
+
+
+    function toggleRefresh() {
+        refreshEnabled = !refreshEnabled;
+        sessionStorage.setItem('refresh', refreshEnabled);
+        document.getElementById('status').textContent = refreshEnabled ? 'Włączone' : 'Wyłączone';
+    }
+</script>
+
 </body>
 </html>
