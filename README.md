@@ -26,4 +26,4 @@
 
 1. Sklonuj repozytorium:
    ```bash
-[   git clone https://github.com/TwojaNazwa/StronaKonkursowa.git](https://github.com/Kubusiowy/System-Konkursowy)
+   [git clone https://github.com/TwojaNazwa/StronaKonkursowa.git](https://github.com/Kubusiowy/System-Konkursowy)
